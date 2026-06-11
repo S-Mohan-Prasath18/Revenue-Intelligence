@@ -153,6 +153,7 @@ export interface TaskStats {
   inProgress: number
   completed: number
   overdue: number
+  cancelled: number
   completionRate: number
 }
 
@@ -163,6 +164,7 @@ export function taskStats(tasks: Task[]): TaskStats {
     inProgress: 0,
     completed: 0,
     overdue: 0,
+    cancelled: 0,
     completionRate: 0,
   }
   for (const t of tasks) {
@@ -170,6 +172,7 @@ export function taskStats(tasks: Task[]): TaskStats {
     else if (t.status === "in_progress") stats.inProgress++
     else if (t.status === "completed") stats.completed++
     else if (t.status === "overdue") stats.overdue++
+    else if (t.status === "cancelled") stats.cancelled++
   }
   stats.completionRate = stats.total > 0 ? (stats.completed / stats.total) * 100 : 0
   return stats

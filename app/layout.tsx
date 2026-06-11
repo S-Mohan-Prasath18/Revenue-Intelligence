@@ -1,18 +1,20 @@
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata } from 'next'
-import { Geist, Geist_Mono } from 'next/font/google'
+import { Inter, Playfair_Display, Geist_Mono } from 'next/font/google'
+
 import './globals.css'
 
-const geistSans = Geist({ variable: '--font-geist-sans', subsets: ['latin'] })
+const inter = Inter({ variable: '--font-geist-sans', subsets: ['latin'], display: 'swap' })
+const playfair = Playfair_Display({ variable: '--font-heading', subsets: ['latin'], display: 'swap' })
 const geistMono = Geist_Mono({
   variable: '--font-geist-mono',
   subsets: ['latin'],
 })
 
 export const metadata: Metadata = {
-  title: 'RIOMS — Revenue Intelligence & Operations',
+  title: 'ST Revenue Intelligence System — Analytics & Operations',
   description:
-    'Centralized multi-office revenue analytics, transaction tracking, pending work management, and deadline intelligence.',
+    'ST Revenue Intelligence System — centralized multi-office revenue analytics, transaction tracking, pending work management, and deadline intelligence.',
   generator: 'v0.app',
   icons: {
     icon: [
@@ -33,31 +35,25 @@ export const metadata: Metadata = {
   },
 }
 
-/**
- * Inline script injected before React hydration to prevent flash of wrong theme.
- * Reads localStorage "rioms-theme" or falls back to system prefers-color-scheme.
- */
-const themeScript = `
-(function() {
-  try {
-    var stored = localStorage.getItem('rioms-theme');
-    if (stored === 'dark' || (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-      document.documentElement.classList.add('dark');
-    }
-  } catch(e) {}
-})();
-`
-
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} bg-background`}>
-      {/* Prevent flash of wrong theme — runs before React hydrates */}
+    <html lang="en" suppressHydrationWarning className={`${inter.variable} ${playfair.variable} ${geistMono.variable} bg-background`}>
       <head>
-        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+        {/* Prevent flash of wrong theme — runs before React hydrates */}
+        <script id="theme-init" dangerouslySetInnerHTML={{ __html: `
+          (function() {
+            try {
+              var s = localStorage.getItem('st-ris-theme');
+              if (s === 'dark' || (!s && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+              }
+            } catch(e) {}
+          })();
+        `}} />
       </head>
       <body className="font-sans antialiased">
         {children}
@@ -66,3 +62,4 @@ export default function RootLayout({
     </html>
   )
 }
+

@@ -8,7 +8,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
@@ -47,33 +46,35 @@ export function DeleteButton({
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger
-        render={
-          <Button
-            variant="ghost"
-            size="icon"
-            aria-label="Delete"
-            className="text-muted-foreground hover:text-destructive"
-          />
-        }
+    <>
+      <button
+        type="button"
+        aria-label="Delete"
+        onClick={(e) => {
+          e.stopPropagation()
+          setOpen(true)
+        }}
+        className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-transparent text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
         <Trash2 className="h-4 w-4" />
-      </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
-          <DialogDescription>{description}</DialogDescription>
-        </DialogHeader>
-        <DialogFooter>
-          <Button variant="outline" onClick={() => setOpen(false)} disabled={pending}>
-            Cancel
-          </Button>
-          <Button variant="destructive" onClick={onConfirm} disabled={pending}>
-            {pending ? "Deleting…" : "Delete"}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+      </button>
+
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{title}</DialogTitle>
+            <DialogDescription>{description}</DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setOpen(false)} disabled={pending}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={onConfirm} disabled={pending}>
+              {pending ? "Deleting…" : "Delete"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   )
 }

@@ -13,6 +13,7 @@ import {
   ListChecks,
   Building2,
   Bell,
+  CreditCard,
 } from "lucide-react"
 import type { NotificationCategory } from "@/lib/types"
 
@@ -25,6 +26,7 @@ const categoryMeta: Record<
   deadline: { label: "Deadline", icon: CalendarClock, className: "bg-[var(--warning)]/15 text-[var(--warning)]" },
   task: { label: "Task", icon: ListChecks, className: "bg-[var(--success)]/12 text-[var(--success)]" },
   office: { label: "Office", icon: Building2, className: "bg-secondary text-secondary-foreground" },
+  payment: { label: "Payment", icon: CreditCard, className: "bg-blue-500/10 text-blue-500" },
 }
 
 export default async function NotificationsPage() {

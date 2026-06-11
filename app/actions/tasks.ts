@@ -23,6 +23,7 @@ export async function createTaskAction(formData: FormData) {
   const description = String(formData.get("description") || "").trim()
   const priority = String(formData.get("priority") || "medium") as TaskPriority
   const assignee = String(formData.get("assignee") || "").trim()
+  const assigneeUserId = String(formData.get("assigneeUserId") || "").trim()
   const deadline = String(formData.get("deadline") || "")
 
   if (!officeId) throw new Error("Please select an office.")
@@ -36,6 +37,7 @@ export async function createTaskAction(formData: FormData) {
     status: "pending",
     priority,
     assignee: assignee || "Unassigned",
+    assigneeUserId: assigneeUserId || undefined,
     deadline: new Date(deadline).toISOString(),
     createdBy: session.userId,
   })
@@ -51,6 +53,7 @@ export async function createTaskAction(formData: FormData) {
   revalidatePath("/dashboard")
   return task
 }
+
 
 export async function updateTaskStatusAction(formData: FormData) {
   await requireUser()

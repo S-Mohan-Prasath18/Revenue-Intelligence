@@ -50,6 +50,7 @@ export async function createTransactionAction(formData: FormData) {
     message: `${category}: ${formatCurrency(amount)} added.`,
   })
 
+  revalidatePath("/", "layout")
   revalidatePath("/transactions")
   revalidatePath("/dashboard")
   revalidatePath("/reports")
@@ -78,6 +79,7 @@ export async function updateTransactionAction(formData: FormData) {
     date: date ? new Date(date).toISOString() : undefined,
   })
 
+  revalidatePath("/", "layout")
   revalidatePath("/transactions")
   revalidatePath("/dashboard")
   revalidatePath("/reports")
@@ -88,6 +90,7 @@ export async function deleteTransactionAction(formData: FormData) {
   const id = String(formData.get("id") || "")
   if (!id) throw new Error("Missing transaction id.")
   await deleteTransaction(id)
+  revalidatePath("/", "layout")
   revalidatePath("/transactions")
   revalidatePath("/dashboard")
   revalidatePath("/reports")

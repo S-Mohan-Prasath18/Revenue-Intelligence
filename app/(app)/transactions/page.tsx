@@ -19,7 +19,17 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { IndianRupee, Wallet, Scale } from "lucide-react"
+import { IndianRupee, Wallet, Scale, CalendarDays, CalendarRange, Calendar } from "lucide-react"
+import type { Transaction } from "@/lib/types"
+
+function periodSummary(transactions: Transaction[], days: number) {
+  const cutoff = new Date()
+  cutoff.setDate(cutoff.getDate() - days)
+  const filtered = transactions.filter((t) => new Date(t.date) >= cutoff)
+  const income = filtered.filter((t) => t.type === "income").reduce((s, t) => s + t.amount, 0)
+  const expense = filtered.filter((t) => t.type === "expense").reduce((s, t) => s + t.amount, 0)
+  return { income, expense, net: income - expense, count: filtered.length }
+}
 
 export default async function TransactionsPage({
   searchParams,
@@ -37,6 +47,9 @@ export default async function TransactionsPage({
     listTransactions(officeId),
   ])
   const summary = summarize(transactions)
+  const daily = periodSummary(transactions, 1)
+  const weekly = periodSummary(transactions, 7)
+  const monthly = periodSummary(transactions, 30)
   const officeName = (id: string) => offices.find((o) => o.id === id)?.name ?? "Unknown"
 
   return (
@@ -47,9 +60,10 @@ export default async function TransactionsPage({
         action={<TransactionDialog offices={offices} defaultOfficeId={officeId} />}
       />
 
+      {/* Overall summary */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <StatCard title="Revenue" value={formatCurrency(summary.totalRevenue)} icon={IndianRupee} accent="primary" />
-        <StatCard title="Expenses" value={formatCurrency(summary.totalExpenses)} icon={Wallet} accent="destructive" />
+        <StatCard title="Total Revenue" value={formatCurrency(summary.totalRevenue)} icon={IndianRupee} accent="primary" />
+        <StatCard title="Total Expenses" value={formatCurrency(summary.totalExpenses)} icon={Wallet} accent="destructive" />
         <StatCard
           title={summary.isProfit ? "Net Profit" : "Net Loss"}
           value={formatCurrency(Math.abs(summary.netProfit))}
@@ -58,7 +72,100 @@ export default async function TransactionsPage({
         />
       </div>
 
-      <Card className="overflow-hidden p-0">
+      {/* Period breakdown */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        {/* Today */}
+        <Card className="p-5 space-y-3">
+          <div className="flex items-center gap-2 text-sm font-semibold">
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-blue-500/10 text-blue-500">
+              <CalendarDays className="h-4 w-4" />
+            </div>
+            Today
+            <Badge variant="secondary" className="ml-auto text-xs">{daily.count} txn</Badge>
+          </div>
+          <div className="grid grid-cols-3 gap-2 text-center">
+            <div>
+              <p className="text-[11px] text-muted-foreground">Income</p>
+              <p className="text-sm font-semibold text-emerald-600">{formatCurrency(daily.income)}</p>
+            </div>
+            <div>
+              <p className="text-[11px] text-muted-foreground">Expense</p>
+              <p className="text-sm font-semibold text-destructive">{formatCurrency(daily.expense)}</p>
+            </div>
+            <div>
+              <p className="text-[11px] text-muted-foreground">Net</p>
+              <p className={`text-sm font-semibold ${daily.net >= 0 ? "text-emerald-600" : "text-destructive"}`}>
+                {formatCurrency(daily.net)}
+              </p>
+            </div>
+          </div>
+        </Card>
+
+        {/* This Week */}
+        <Card className="p-5 space-y-3">
+          <div className="flex items-center gap-2 text-sm font-semibold">
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-violet-500/10 text-violet-500">
+              <CalendarRange className="h-4 w-4" />
+            </div>
+            This Week
+            <Badge variant="secondary" className="ml-auto text-xs">{weekly.count} txn</Badge>
+          </div>
+          <div className="grid grid-cols-3 gap-2 text-center">
+            <div>
+              <p className="text-[11px] text-muted-foreground">Income</p>
+              <p className="text-sm font-semibold text-emerald-600">{formatCurrency(weekly.income)}</p>
+            </div>
+            <div>
+              <p className="text-[11px] text-muted-foreground">Expense</p>
+              <p className="text-sm font-semibold text-destructive">{formatCurrency(weekly.expense)}</p>
+            </div>
+            <div>
+              <p className="text-[11px] text-muted-foreground">Net</p>
+              <p className={`text-sm font-semibold ${weekly.net >= 0 ? "text-emerald-600" : "text-destructive"}`}>
+                {formatCurrency(weekly.net)}
+              </p>
+            </div>
+          </div>
+        </Card>
+
+        {/* This Month */}
+        <Card className="p-5 space-y-3">
+          <div className="flex items-center gap-2 text-sm font-semibold">
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-amber-500/10 text-amber-500">
+              <Calendar className="h-4 w-4" />
+            </div>
+            This Month
+            <Badge variant="secondary" className="ml-auto text-xs">{monthly.count} txn</Badge>
+          </div>
+          <div className="grid grid-cols-3 gap-2 text-center">
+            <div>
+              <p className="text-[11px] text-muted-foreground">Income</p>
+              <p className="text-sm font-semibold text-emerald-600">{formatCurrency(monthly.income)}</p>
+            </div>
+            <div>
+              <p className="text-[11px] text-muted-foreground">Expense</p>
+              <p className="text-sm font-semibold text-destructive">{formatCurrency(monthly.expense)}</p>
+            </div>
+            <div>
+              <p className="text-[11px] text-muted-foreground">Net</p>
+              <p className={`text-sm font-semibold ${monthly.net >= 0 ? "text-emerald-600" : "text-destructive"}`}>
+                {formatCurrency(monthly.net)}
+              </p>
+            </div>
+          </div>
+        </Card>
+      </div>
+
+      {/* Transactions table */}
+      <Card className="card-premium overflow-hidden p-0 border-0">
+        <div className="flex items-center justify-between border-b border-border/50 bg-card/50 px-5 py-4">
+          <div className="flex items-center gap-2">
+            <p className="text-gradient-gold text-lg font-bold">
+              All Transactions
+            </p>
+            <Badge variant="secondary" className="ml-1">{transactions.length}</Badge>
+          </div>
+        </div>
         <Table>
           <TableHeader>
             <TableRow>
@@ -82,7 +189,7 @@ export default async function TransactionsPage({
               transactions.map((t) => (
                 <TableRow key={t.id}>
                   <TableCell className="whitespace-nowrap text-muted-foreground">
-                    {new Date(t.date).toLocaleDateString("en-US", {
+                    {new Date(t.date).toLocaleDateString("en-IN", {
                       month: "short",
                       day: "numeric",
                       year: "numeric",
@@ -98,7 +205,7 @@ export default async function TransactionsPage({
                       variant="outline"
                       className={
                         t.type === "income"
-                          ? "border-[var(--success)]/40 text-[var(--success)]"
+                          ? "border-emerald-500/40 text-emerald-600"
                           : "border-destructive/40 text-destructive"
                       }
                     >
@@ -107,7 +214,7 @@ export default async function TransactionsPage({
                   </TableCell>
                   <TableCell
                     className={`text-right font-medium ${
-                      t.type === "income" ? "text-[var(--success)]" : "text-destructive"
+                      t.type === "income" ? "text-emerald-600" : "text-destructive"
                     }`}
                   >
                     {t.type === "income" ? "+" : "-"}

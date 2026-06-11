@@ -11,15 +11,14 @@ import {
 import { toast } from "sonner"
 import { Check, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { updateTaskStatusAction } from "@/app/actions/tasks"
-import type { TaskStatus } from "@/lib/types"
+import { updateDailyWorkStatusAction } from "@/app/actions/dailyworks"
 
-export function TaskStatusControl({
+export function DailyWorkStatusControl({
   id,
   status,
 }: {
   id: string
-  status: TaskStatus
+  status: "done" | "in_progress" | "pending" | "cancelled"
 }) {
   const [pending, startTransition] = useTransition()
 
@@ -30,35 +29,34 @@ export function TaskStatusControl({
         const fd = new FormData()
         fd.set("id", id)
         fd.set("status", value)
-        await updateTaskStatusAction(fd)
-        toast.success("Status updated")
+        await updateDailyWorkStatusAction(fd)
+        toast.success("Work status updated")
       } catch (e) {
         toast.error(e instanceof Error ? e.message : "Failed to update")
       }
     })
   }
 
-  // Overdue is derived automatically; allow setting working states + completed
   return (
     <div className="flex items-center gap-1">
-      <Select value={status === "overdue" ? "pending" : status} onValueChange={onChange} disabled={pending}>
-        <SelectTrigger size="sm" className="w-[110px]">
+      <Select value={status} onValueChange={onChange} disabled={pending}>
+        <SelectTrigger size="sm" className="w-[125px]">
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="pending">Pending</SelectItem>
-          <SelectItem value="in_progress">In Progress</SelectItem>
-          <SelectItem value="completed">Completed</SelectItem>
-          <SelectItem value="cancelled">Cancelled</SelectItem>
+          <SelectItem value="pending">⏳ Pending</SelectItem>
+          <SelectItem value="in_progress">🔄 In Progress</SelectItem>
+          <SelectItem value="done">✅ Done</SelectItem>
+          <SelectItem value="cancelled">❌ Cancelled</SelectItem>
         </SelectContent>
       </Select>
       <Button
         variant="ghost"
         size="icon"
         className="h-8 w-8 text-green-600 hover:text-green-700 hover:bg-green-100"
-        onClick={() => onChange("completed")}
-        disabled={pending || status === "completed"}
-        title="Mark as completed"
+        onClick={() => onChange("done")}
+        disabled={pending || status === "done"}
+        title="Mark as done"
       >
         <Check className="h-4 w-4" />
       </Button>

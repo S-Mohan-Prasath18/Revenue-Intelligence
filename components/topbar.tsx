@@ -21,7 +21,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { Bell, LogOut, Building2 } from "lucide-react"
+import { Bell, LogOut, Building2, Search } from "lucide-react"
 import { logoutAction } from "@/app/actions/auth"
 import { MobileNav } from "@/components/mobile-nav"
 import { ThemeToggle } from "@/components/theme-toggle"
@@ -62,15 +62,34 @@ export function Topbar({
     .toUpperCase()
 
   return (
-    <header className="flex h-16 shrink-0 items-center gap-3 border-b bg-card px-4 lg:px-6">
-      {/* Mobile hamburger — hidden on large screens */}
+    <header
+      className="flex h-14 shrink-0 items-center gap-3 px-4 lg:px-6"
+      style={{
+        background: "var(--card)",
+        borderBottom: "1px solid var(--border)",
+      }}
+    >
+      {/* Mobile hamburger */}
       <MobileNav role={role} />
 
+      {/* Office selector */}
       <div className="flex items-center gap-2">
-        <Building2 className="h-4 w-4 text-muted-foreground" />
+        <Building2 className="h-4 w-4 hidden sm:block" style={{ color: "var(--muted-foreground)" }} />
         <Select value={currentOfficeId} onValueChange={onOfficeChange}>
-          <SelectTrigger className="w-[160px] sm:w-[200px]">
-            <SelectValue placeholder="Select office" />
+          <SelectTrigger
+            className="w-[140px] sm:w-[180px] text-sm font-medium h-9"
+            style={{
+              border: "1px solid var(--border)",
+              color: "var(--foreground)",
+              borderRadius: "8px",
+              background: "var(--background)",
+            }}
+          >
+            <SelectValue>
+              {currentOfficeId === "all"
+                ? "All Offices"
+                : (offices.find((o) => o.id === currentOfficeId)?.name ?? "Select office")}
+            </SelectValue>
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Offices</SelectItem>
@@ -83,56 +102,79 @@ export function Topbar({
         </Select>
       </div>
 
-      <div className="ml-auto flex items-center gap-1">
+      <div className="ml-auto flex items-center gap-1.5">
         {/* Dark / light mode toggle */}
         <ThemeToggle />
 
         {/* Notification bell */}
         <Button
           render={<Link href="/notifications" aria-label="Notifications" />}
+          nativeButton={false}
           variant="ghost"
           size="icon"
-          className="relative"
+          className="relative h-9 w-9"
+          style={{ borderRadius: "8px" }}
         >
-          <Bell className="h-5 w-5" />
+          <Bell className="h-[18px] w-[18px]" style={{ color: "var(--muted-foreground)" }} />
           {unreadCount > 0 && (
-            <span className="absolute -right-0.5 -top-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-semibold text-white">
+            <span
+              className="badge-pulse absolute -right-0.5 -top-0.5 flex h-4.5 min-w-4.5 items-center justify-center rounded-full px-1 text-[10px] font-bold text-white"
+              style={{ background: "#D4AF37" }}
+            >
               {unreadCount > 9 ? "9+" : unreadCount}
             </span>
           )}
         </Button>
 
+        {/* Divider */}
+        <div className="hidden sm:block h-6 w-px mx-1" style={{ background: "var(--border)" }} />
+
         {/* User dropdown */}
         <DropdownMenu>
           <DropdownMenuTrigger
-            render={<Button variant="ghost" className="flex items-center gap-2 px-2" />}
+            render={
+              <Button
+                variant="ghost"
+                className="flex items-center gap-2 px-2 h-9 hover:bg-accent"
+                style={{ borderRadius: "8px" }}
+              />
+            }
           >
-            <Avatar className="h-8 w-8">
-              <AvatarFallback className="bg-primary text-primary-foreground text-xs">
+            <Avatar className="h-7 w-7">
+              <AvatarFallback
+                className="text-xs font-bold"
+                style={{
+                  background: "linear-gradient(135deg, #D4AF37, #E2C275)",
+                  color: "#fff",
+                  fontSize: "0.6875rem",
+                }}
+              >
                 {initials}
               </AvatarFallback>
             </Avatar>
             <div className="hidden text-left sm:block">
-              <p className="text-sm font-medium leading-none">{userName}</p>
-              <p className="text-xs text-muted-foreground">{ROLE_LABELS[role]}</p>
+              <p className="text-sm font-semibold leading-none">{userName}</p>
+              <p className="mt-0.5 text-[0.6875rem]" style={{ color: "var(--muted-foreground)" }}>
+                {ROLE_LABELS[role]}
+              </p>
             </div>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56">
+          <DropdownMenuContent align="end" className="w-56" style={{ borderRadius: "12px" }}>
             <DropdownMenuLabel>
-              <div className="flex flex-col">
-                <span>{userName}</span>
-                <span className="text-xs font-normal text-muted-foreground">
+              <div className="flex flex-col gap-0.5">
+                <span className="text-sm font-semibold">{userName}</span>
+                <span className="text-xs font-normal" style={{ color: "var(--muted-foreground)" }}>
                   {userEmail}
                 </span>
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem
-              render={<button type="button" className="w-full cursor-pointer" />}
+              render={<div className="w-full cursor-pointer" />}
               onClick={() => logoutAction()}
             >
               <LogOut className="mr-2 h-4 w-4" />
-              Sign out
+              <span className="text-sm">Sign out</span>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

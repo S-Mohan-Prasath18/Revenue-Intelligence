@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button"
 import { Download, Printer } from "lucide-react"
 
-type Row = Record<string, string | number>
+type Row = Record<string, any>
 
 function toCsv(rows: Row[]): string {
   if (rows.length === 0) return ""

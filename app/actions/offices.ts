@@ -46,6 +46,7 @@ export async function createOfficeAction(formData: FormData) {
     message: `${office.name} was registered in the system.`,
   })
 
+  revalidatePath("/", "layout")
   revalidatePath("/offices")
   revalidatePath("/dashboard")
 }
@@ -64,6 +65,7 @@ export async function updateOfficeAction(formData: FormData) {
     contactPhone: String(formData.get("contactPhone") || "").trim(),
   })
 
+  revalidatePath("/", "layout")
   revalidatePath("/offices")
   revalidatePath("/dashboard")
 }
@@ -73,6 +75,7 @@ export async function deleteOfficeAction(formData: FormData) {
   const id = String(formData.get("id") || "")
   if (!id) throw new Error("Missing office id.")
   await deleteOffice(id)
+  revalidatePath("/", "layout")
   revalidatePath("/offices")
   revalidatePath("/dashboard")
 }

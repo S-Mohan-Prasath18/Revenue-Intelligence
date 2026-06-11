@@ -11,7 +11,7 @@ export function ThemeToggle() {
   useEffect(() => {
     setMounted(true)
     // Read current theme from the html element
-    const stored = localStorage.getItem("rioms-theme")
+    const stored = localStorage.getItem("st-ris-theme")
     if (stored === "dark") {
       setIsDark(true)
       document.documentElement.classList.add("dark")
@@ -31,10 +31,10 @@ export function ThemeToggle() {
     setIsDark(next)
     if (next) {
       document.documentElement.classList.add("dark")
-      localStorage.setItem("rioms-theme", "dark")
+      localStorage.setItem("st-ris-theme", "dark")
     } else {
       document.documentElement.classList.remove("dark")
-      localStorage.setItem("rioms-theme", "light")
+      localStorage.setItem("st-ris-theme", "light")
     }
   }
 

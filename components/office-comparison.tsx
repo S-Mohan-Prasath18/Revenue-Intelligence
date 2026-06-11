@@ -31,12 +31,12 @@ export function OfficeComparison({ stats }: OfficeComparisonProps) {
         {stats.length === 0 ? (
           <p className="text-sm text-muted-foreground">No office data available.</p>
         ) : (
-          stats.map((office) => {
+          stats.map((office, index) => {
             const profitable = office.profit >= 0
             const contribution =
               totalRevenue > 0 ? Math.round((office.revenue / totalRevenue) * 100) : 0
             return (
-              <div key={office.officeId} className="flex flex-col gap-2">
+              <div key={`${office.officeId}-${index}`} className="flex flex-col gap-2">
                 <div className="flex items-center justify-between gap-2">
                   <div className="flex items-center gap-2">
                     <span className="font-medium">{office.officeName}</span>

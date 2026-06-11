@@ -13,6 +13,9 @@ import {
   Bell,
   FileBarChart,
   BarChart3,
+  Users as UsersIcon,
+  CreditCard,
+  ClipboardList,
 } from "lucide-react"
 
 interface NavItem {
@@ -23,12 +26,14 @@ interface NavItem {
 }
 
 const NAV: NavItem[] = [
-  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard, module: "dashboard" },
-  { href: "/offices", label: "Offices", icon: Building2, module: "offices" },
-  { href: "/transactions", label: "Transactions", icon: ArrowLeftRight, module: "transactions" },
-  { href: "/tasks", label: "Pending Works", icon: ListChecks, module: "tasks" },
-  { href: "/notifications", label: "Notifications", icon: Bell, module: "notifications" },
-  { href: "/reports", label: "Reports", icon: FileBarChart, module: "reports" },
+  { href: "/dashboard",   label: "Dashboard",        icon: LayoutDashboard, module: "dashboard" },
+  { href: "/offices",     label: "Offices",           icon: Building2,       module: "offices" },
+  { href: "/transactions",label: "Transactions",      icon: ArrowLeftRight,  module: "transactions" },
+  { href: "/tasks",       label: "Pending Works",     icon: ListChecks,      module: "tasks" },
+  { href: "/reports",     label: "Reports",           icon: FileBarChart,    module: "reports" },
+  { href: "/users",       label: "Users",             icon: UsersIcon,       module: "users" },
+  { href: "/payments",    label: "Pending Payments",  icon: CreditCard,      module: "payments" },
+  { href: "/daily-works", label: "Daily Works",       icon: ClipboardList,   module: "dailyworks" },
 ]
 
 export function Sidebar({ role }: { role: Role }) {
@@ -36,18 +41,49 @@ export function Sidebar({ role }: { role: Role }) {
   const items = NAV.filter((item) => canAccess(role, item.module))
 
   return (
-    <aside className="hidden w-64 shrink-0 flex-col bg-sidebar text-sidebar-foreground lg:flex">
-      <div className="flex h-16 items-center gap-2 border-b border-sidebar-border px-6">
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-          <BarChart3 className="h-5 w-5" />
+    <aside
+      className="hidden w-64 shrink-0 flex-col lg:flex"
+      style={{
+        background: "#0F1115",
+        borderRight: "1px solid rgba(255,255,255,0.06)",
+      }}
+    >
+      {/* ── Logo ── */}
+      <div
+        className="flex h-16 items-center gap-3 px-5"
+        style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}
+      >
+        <div
+          className="flex h-9 w-9 shrink-0 items-center justify-center"
+          style={{
+            background: "linear-gradient(135deg, #D4AF37 0%, #E2C275 100%)",
+            borderRadius: "10px",
+            boxShadow: "0 2px 12px rgba(212,175,55,.3)",
+          }}
+        >
+          <BarChart3 className="h-5 w-5" style={{ color: "#fff" }} />
         </div>
-        <div className="leading-tight">
-          <p className="text-sm font-semibold">RIOMS</p>
-          <p className="text-xs text-sidebar-foreground/60">Revenue Intelligence</p>
+        <div className="leading-tight min-w-0">
+          <p
+            className="text-sm font-bold tracking-tight leading-none"
+            style={{ color: "#FAFAFA", letterSpacing: "-0.01em" }}
+          >
+            ST Revenue
+          </p>
+          <p
+            className="text-[0.625rem] font-medium mt-0.5 uppercase tracking-widest"
+            style={{ color: "rgba(161,161,170,0.5)" }}
+          >
+            Intelligence System
+          </p>
         </div>
       </div>
 
-      <nav className="flex flex-1 flex-col gap-1 p-4">
+      {/* ── Nav ── */}
+      <nav className="flex flex-1 flex-col gap-0.5 px-3 pt-5">
+        <p className="sidebar-section-label mb-2">
+          Main Menu
+        </p>
         {items.map((item) => {
           const active =
             item.href === "/dashboard"
@@ -59,22 +95,26 @@ export function Sidebar({ role }: { role: Role }) {
               key={item.href}
               href={item.href}
               className={cn(
-                "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
-                active
-                  ? "bg-sidebar-primary text-sidebar-primary-foreground"
-                  : "text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+                "sidebar-nav-item",
+                active && "active",
               )}
             >
-              <Icon className="h-4 w-4" />
-              {item.label}
+              <Icon
+                className="h-[18px] w-[18px] shrink-0 transition-transform duration-200 group-hover:scale-110"
+              />
+              <span>{item.label}</span>
             </Link>
           )
         })}
       </nav>
 
-      <div className="border-t border-sidebar-border p-4">
-        <p className="text-xs text-sidebar-foreground/50">
-          Operations Management System
+      {/* ── Footer ── */}
+      <div
+        className="px-5 py-4"
+        style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}
+      >
+        <p className="text-[0.6875rem] font-medium" style={{ color: "rgba(161,161,170,0.4)" }}>
+          © 2025 ST Revenue Intelligence
         </p>
       </div>
     </aside>

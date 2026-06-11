@@ -1,12 +1,14 @@
-export type Role = "admin" | "manager" | "employee"
+export type Role = "admin" | "user"
 
 export type OfficeType = "branch" | "headquarters" | "franchise" | "regional"
 
 export type TransactionType = "income" | "expense"
 
-export type TaskStatus = "pending" | "in_progress" | "completed" | "overdue"
+export type TaskStatus = "pending" | "in_progress" | "completed" | "overdue" | "cancelled"
 
 export type TaskPriority = "low" | "medium" | "high"
+
+export type PaymentStatus = "pending" | "paid" | "overdue" | "partial"
 
 export type NotificationCategory =
   | "revenue"
@@ -14,6 +16,7 @@ export type NotificationCategory =
   | "deadline"
   | "task"
   | "office"
+  | "payment"
 
 export interface UserDoc {
   _id: string
@@ -63,10 +66,39 @@ export interface Task {
   status: TaskStatus
   priority: TaskPriority
   assignee: string
+  assigneeUserId?: string
   deadline: string
   createdBy: string
   createdAt: string
   completedAt?: string
+}
+
+export interface Payment {
+  id: string
+  officeId: string
+  title: string
+  description: string
+  amount: number
+  dueDate: string
+  status: PaymentStatus
+  paidAmount: number
+  paidAt?: string
+  createdBy: string
+  createdAt: string
+}
+
+export interface DailyWork {
+  id: string
+  userId: string
+  userName: string
+  officeId: string
+  title: string
+  description: string
+  date: string
+  hoursSpent: number
+  status: "done" | "in_progress" | "pending" | "cancelled"
+  taskId?: string
+  createdAt: string
 }
 
 export interface Notification {
@@ -81,18 +113,20 @@ export interface Notification {
 
 export const ROLE_LABELS: Record<Role, string> = {
   admin: "Admin",
-  manager: "Manager",
-  employee: "Employee",
+  user: "User",
 }
 
 // Module-level access control matrix
 export const ACCESS: Record<string, Role[]> = {
   offices: ["admin"],
-  transactions: ["admin", "manager"],
-  reports: ["admin", "manager", "employee"],
-  tasks: ["admin", "manager", "employee"],
-  notifications: ["admin", "manager", "employee"],
-  dashboard: ["admin", "manager", "employee"],
+  transactions: ["admin", "user"],
+  reports: ["admin", "user"],
+  tasks: ["admin", "user"],
+  notifications: ["admin", "user"],
+  dashboard: ["admin", "user"],
+  users: ["admin"],
+  payments: ["admin", "user"],
+  dailyworks: ["admin", "user"],
 }
 
 export function canAccess(role: Role, module: string): boolean {

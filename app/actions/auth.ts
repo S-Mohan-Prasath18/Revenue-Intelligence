@@ -10,7 +10,7 @@ export interface AuthResult {
   error?: string
 }
 
-const VALID_ROLES: Role[] = ["admin", "manager", "employee"]
+const VALID_ROLES: Role[] = ["admin", "user"]
 
 export async function signupAction(
   _prev: AuthResult,
@@ -19,7 +19,7 @@ export async function signupAction(
   const name = String(formData.get("name") || "").trim()
   const email = String(formData.get("email") || "").trim().toLowerCase()
   const password = String(formData.get("password") || "")
-  let role = String(formData.get("role") || "employee") as Role
+  let role = String(formData.get("role") || "user") as Role
 
   if (!name || !email || !password) {
     return { error: "All fields are required." }
@@ -27,7 +27,7 @@ export async function signupAction(
   if (password.length < 6) {
     return { error: "Password must be at least 6 characters." }
   }
-  if (!VALID_ROLES.includes(role)) role = "employee"
+  if (!VALID_ROLES.includes(role)) role = "user"
 
   const existing = await findUserByEmail(email)
   if (existing) {

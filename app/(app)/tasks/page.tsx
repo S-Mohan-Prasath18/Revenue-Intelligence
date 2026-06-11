@@ -1,5 +1,5 @@
 import { requireSession } from "@/app/actions/auth"
-import { listOffices, listTasks } from "@/lib/data"
+import { listOffices, listTasks, listUsers } from "@/lib/data"
 import { taskStats } from "@/lib/analytics"
 import { deadlineInfo } from "@/lib/format"
 import { deleteTaskAction } from "@/app/actions/tasks"
@@ -38,28 +38,30 @@ export default async function TasksPage({
 }: {
   searchParams: Promise<{ office?: string }>
 }) {
-  await requireSession()
+  const session = await requireSession()
   const { office: officeParam } = await searchParams
   const officeId = officeParam && officeParam !== "all" ? officeParam : undefined
 
-  const [offices, tasks] = await Promise.all([
+  const [offices, tasks, users] = await Promise.all([
     listOffices(),
     listTasks(officeId),
+    listUsers(),
   ])
   const stats = taskStats(tasks)
   const officeName = (id: string) => offices.find((o) => o.id === id)?.name ?? "Unknown"
+  const isAdmin = session.role === "admin"
 
   // Deadline alert matrix
-  const overdue = tasks.filter((t) => t.status !== "completed" && deadlineInfo(t.deadline).level === "overdue")
-  const dueToday = tasks.filter((t) => t.status !== "completed" && deadlineInfo(t.deadline).level === "today")
-  const upcoming = tasks.filter((t) => t.status !== "completed" && deadlineInfo(t.deadline).level === "upcoming")
+  const overdue = tasks.filter((t) => t.status !== "completed" && t.status !== "cancelled" && deadlineInfo(t.deadline).level === "overdue")
+  const dueToday = tasks.filter((t) => t.status !== "completed" && t.status !== "cancelled" && deadlineInfo(t.deadline).level === "today")
+  const upcoming = tasks.filter((t) => t.status !== "completed" && t.status !== "cancelled" && deadlineInfo(t.deadline).level === "upcoming")
 
   return (
     <div className="flex flex-col gap-6">
       <PageHeader
         title="Pending Works"
         description="Track operational tasks, deadlines, and progress."
-        action={<TaskDialog offices={offices} defaultOfficeId={officeId} />}
+        action={<TaskDialog offices={offices} users={users} defaultOfficeId={officeId} isAdmin={isAdmin} />}
       />
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
@@ -143,14 +145,16 @@ export default async function TasksPage({
                     <TableCell className="whitespace-nowrap">
                       <span
                         className={
-                          info.level === "overdue"
-                            ? "text-destructive"
-                            : info.level === "today"
-                              ? "text-[var(--warning)]"
-                              : "text-muted-foreground"
+                          t.status === "cancelled"
+                            ? "text-muted-foreground line-through"
+                            : info.level === "overdue"
+                              ? "text-destructive"
+                              : info.level === "today"
+                                ? "text-[var(--warning)]"
+                                : "text-muted-foreground"
                         }
                       >
-                        {t.status === "completed" ? "Completed" : info.label}
+                        {t.status === "completed" ? "Completed" : t.status === "cancelled" ? "Cancelled" : info.label}
                       </span>
                     </TableCell>
                     <TableCell>
