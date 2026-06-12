@@ -1,6 +1,6 @@
 import type { ReactNode } from "react"
 import { requireSession } from "@/app/actions/auth"
-import { listOffices, listNotifications } from "@/lib/data"
+import { listOffices, listNotifications, findUserByEmail } from "@/lib/data"
 import { Sidebar } from "@/components/sidebar"
 import { Topbar } from "@/components/topbar"
 import { Toaster } from "@/components/ui/sonner"
@@ -14,11 +14,13 @@ export default async function AppLayout({
   children: ReactNode
 }) {
   const session = await requireSession()
-  const [offices, notifications] = await Promise.all([
+  const [offices, notifications, dbUser] = await Promise.all([
     listOffices(),
     listNotifications(),
+    findUserByEmail(session.email),
   ])
   const unreadCount = notifications.filter((n) => !n.read).length
+  const currentName = dbUser?.name || session.name
 
   return (
     <div className="flex min-h-screen" style={{ background: "var(--background)" }}>
@@ -26,7 +28,7 @@ export default async function AppLayout({
       <div className="flex min-w-0 flex-1 flex-col">
         <Topbar
           offices={offices}
-          userName={session.name}
+          userName={currentName}
           userEmail={session.email}
           role={session.role}
           unreadCount={unreadCount}

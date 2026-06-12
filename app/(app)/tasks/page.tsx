@@ -136,7 +136,9 @@ export default async function TasksPage({
                     <TableCell className="whitespace-nowrap text-muted-foreground">
                       {officeName(t.officeId)}
                     </TableCell>
-                    <TableCell className="whitespace-nowrap">{t.assignee}</TableCell>
+                    <TableCell className="whitespace-nowrap">
+                      {users.find(u => u.id === t.assigneeUserId)?.name || t.assignee}
+                    </TableCell>
                     <TableCell>
                       <Badge variant="outline" className={priorityStyles[t.priority]}>
                         {t.priority}

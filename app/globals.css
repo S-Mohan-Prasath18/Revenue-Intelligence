@@ -181,7 +181,7 @@
   }
 
   html {
-    font-size: 16px;
+    font-size: 14px;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     font-family: 'Inter', system-ui, sans-serif;
@@ -190,7 +190,7 @@
 
   body {
     @apply bg-background text-foreground;
-    font-size: 1.0625rem;
+    font-size: 0.95rem;
     line-height: 1.6;
     letter-spacing: 0.01em;
     color: var(--foreground);

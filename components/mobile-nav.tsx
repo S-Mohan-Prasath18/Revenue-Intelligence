@@ -66,9 +66,10 @@ export function MobileNav({ role }: { role: Role }) {
       </SheetTrigger>
       <SheetContent
         side="left"
+        className="font-sans"
         style={{
-          background: "#0F1115",
-          borderRight: "1px solid rgba(255,255,255,0.06)",
+          background: "#FFFFFF",
+          borderRight: "1px solid #E5E7EB",
         }}
       >
         <SheetHeader>
@@ -83,16 +84,16 @@ export function MobileNav({ role }: { role: Role }) {
               <BarChart3 className="h-4 w-4 text-white" />
             </div>
             <div className="leading-tight">
-              <SheetTitle style={{ color: "#FAFAFA", fontSize: "0.875rem" }}>ST Revenue</SheetTitle>
-              <p className="text-[0.625rem] uppercase tracking-widest" style={{ color: "rgba(161,161,170,0.5)" }}>
+              <SheetTitle className="font-sans font-bold" style={{ color: "#111827", fontSize: "0.875rem" }}>ST Revenue</SheetTitle>
+              <p className="text-[0.625rem] font-sans uppercase tracking-widest" style={{ color: "#6B7280" }}>
                 Intelligence System
               </p>
             </div>
           </div>
         </SheetHeader>
 
-        <nav className="flex flex-1 flex-col gap-0.5 p-3 pt-4">
-          <p className="sidebar-section-label mb-2">Main Menu</p>
+        <nav className="flex flex-1 flex-col gap-1 p-3 pt-4">
+          <p className="text-[0.6875rem] font-semibold uppercase tracking-[0.08em] text-gray-500 px-3 mb-2 font-sans">Main Menu</p>
           {items.map((item) => {
             const active =
               item.href === "/dashboard"
@@ -107,8 +108,10 @@ export function MobileNav({ role }: { role: Role }) {
                   <Link
                     href={item.href}
                     className={cn(
-                      "sidebar-nav-item",
-                      active && "active",
+                      "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors font-sans",
+                      active 
+                        ? "bg-[#D4AF37]/10 text-[#D4AF37]" 
+                        : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
                     )}
                   />
                 }
@@ -120,8 +123,8 @@ export function MobileNav({ role }: { role: Role }) {
           })}
         </nav>
 
-        <div className="p-4" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
-          <p className="text-[0.6875rem]" style={{ color: "rgba(161,161,170,0.4)" }}>
+        <div className="p-4" style={{ borderTop: "1px solid #E5E7EB" }}>
+          <p className="text-[0.6875rem] font-sans" style={{ color: "#9CA3AF" }}>
             © 2025 ST Revenue Intelligence
           </p>
         </div>

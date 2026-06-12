@@ -109,7 +109,7 @@ export default async function DailyWorksPage({
                       <TableCell className="whitespace-nowrap">
                         <div className="flex items-center gap-1.5">
                           <UserCheck className="h-3.5 w-3.5 text-muted-foreground" />
-                          <span>{w.userName}</span>
+                          <span>{users.find(u => u.id === w.userId)?.name || w.userName}</span>
                         </div>
                       </TableCell>
                     )}
