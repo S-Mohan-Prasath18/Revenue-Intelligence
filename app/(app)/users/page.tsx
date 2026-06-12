@@ -56,7 +56,7 @@ export default async function UsersPage() {
         ) : (
           <>
             {/* Table header */}
-            <div className="grid grid-cols-[1fr_auto_auto_auto] items-center gap-4 border-b bg-muted/30 px-5 py-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            <div className="hidden sm:grid sm:grid-cols-[1fr_auto_auto_auto] items-center gap-4 border-b bg-muted/30 px-5 py-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
               <span>User</span>
               <span className="w-20 text-center">Role</span>
               <span className="w-28 text-right">Joined</span>
@@ -68,26 +68,35 @@ export default async function UsersPage() {
               {users.map((user, i) => (
                 <div
                   key={`${user.id}-${i}`}
-                  className="grid grid-cols-[1fr_auto_auto_auto] items-center gap-4 px-5 py-3.5 hover:bg-muted/30 transition-colors"
+                  className="flex flex-col sm:grid sm:grid-cols-[1fr_auto_auto_auto] sm:items-center gap-4 px-5 py-3.5 hover:bg-muted/30 transition-colors"
                 >
                   {/* Avatar + Name */}
-                  <div className="flex items-center gap-3 min-w-0">
-                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary text-sm font-semibold">
-                      {user.name.split(" ").map(n => n[0]).slice(0, 2).join("").toUpperCase()}
-                    </div>
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-2">
-                        <p className="text-sm font-medium truncate">{user.name}</p>
-                        {user.id === session.userId && (
-                          <Badge variant="outline" className="text-[10px] py-0 h-4 shrink-0">You</Badge>
-                        )}
+                  <div className="flex items-center justify-between sm:justify-start gap-3 min-w-0">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary text-sm font-semibold">
+                        {user.name.split(" ").map(n => n[0]).slice(0, 2).join("").toUpperCase()}
                       </div>
-                      <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2">
+                          <p className="text-sm font-medium truncate">{user.name}</p>
+                          {user.id === session.userId && (
+                            <Badge variant="outline" className="text-[10px] py-0 h-4 shrink-0">You</Badge>
+                          )}
+                        </div>
+                        <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+                      </div>
+                    </div>
+                    {/* Role for mobile */}
+                    <div className="sm:hidden shrink-0">
+                      <Badge variant={user.role === "admin" ? "default" : "secondary"} className="flex items-center gap-1 justify-center">
+                        {user.role === "admin" ? <ShieldCheck className="h-3 w-3" /> : <UserIcon className="h-3 w-3" />}
+                        {ROLE_LABELS[user.role]}
+                      </Badge>
                     </div>
                   </div>
 
-                  {/* Role */}
-                  <div className="w-20 text-center">
+                  {/* Role (Desktop) */}
+                  <div className="hidden sm:block w-20 text-center">
                     <Badge
                       variant={user.role === "admin" ? "default" : "secondary"}
                       className="flex items-center gap-1 justify-center"
@@ -99,33 +108,36 @@ export default async function UsersPage() {
                     </Badge>
                   </div>
 
-                  {/* Joined date */}
-                  <div className="w-28 text-right">
-                    <p className="text-xs text-muted-foreground">
-                      {new Date(user.createdAt).toLocaleDateString("en-IN", {
-                        year: "numeric",
-                        month: "short",
-                        day: "numeric",
-                      })}
-                    </p>
-                  </div>
+                  <div className="flex items-center justify-between sm:contents mt-2 sm:mt-0">
+                    {/* Joined date */}
+                    <div className="sm:w-28 sm:text-right">
+                      <p className="text-xs text-muted-foreground">
+                        <span className="sm:hidden font-semibold mr-1">Joined:</span>
+                        {new Date(user.createdAt).toLocaleDateString("en-IN", {
+                          year: "numeric",
+                          month: "short",
+                          day: "numeric",
+                        })}
+                      </p>
+                    </div>
 
-                  {/* Actions */}
-                  <div className="w-16 flex items-center justify-end gap-0.5">
-                    {user.id !== session.userId ? (
-                      <>
-                        <UserDialog user={user} />
-                        <DeleteButton
-                          id={user.id}
-                          action={deleteUserAction}
-                          title="Delete user?"
-                          description={`This will permanently remove ${user.name} from the system.`}
-                          successMessage="User deleted"
-                        />
-                      </>
-                    ) : (
-                      <span className="text-xs text-muted-foreground pr-1">—</span>
-                    )}
+                    {/* Actions */}
+                    <div className="sm:w-16 flex items-center justify-end gap-0.5">
+                      {user.id !== session.userId ? (
+                        <>
+                          <UserDialog user={user} />
+                          <DeleteButton
+                            id={user.id}
+                            action={deleteUserAction}
+                            title="Delete user?"
+                            description={`This will permanently remove ${user.name} from the system.`}
+                            successMessage="User deleted"
+                          />
+                        </>
+                      ) : (
+                        <span className="text-xs text-muted-foreground pr-1">—</span>
+                      )}
+                    </div>
                   </div>
                 </div>
               ))}

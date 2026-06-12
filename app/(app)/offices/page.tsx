@@ -59,23 +59,29 @@ export default async function OfficesPage() {
         ) : (
           <div className="divide-y divide-border/50">
             {users.map((user, i) => (
-              <div key={`${user.id}-${i}`} className="flex items-center gap-4 px-5 py-3 transition-colors hover:bg-secondary/30">
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-xs font-bold" style={{ background: "linear-gradient(135deg, #D4AF37, #E2C275)", color: "#fff" }}>
-                  {user.name.split(" ").map(n => n[0]).slice(0, 2).join("").toUpperCase()}
+              <div key={`${user.id}-${i}`} className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 px-5 py-4 transition-colors hover:bg-secondary/30">
+                <div className="flex items-center gap-4 min-w-0">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-xs font-bold" style={{ background: "linear-gradient(135deg, #D4AF37, #E2C275)", color: "#fff" }}>
+                    {user.name.split(" ").map(n => n[0]).slice(0, 2).join("").toUpperCase()}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <p className="text-[0.9375rem] font-bold text-foreground truncate">{user.name}</p>
+                      {user.id === session.userId && (
+                        <span className="text-xs font-medium text-primary shrink-0">(You)</span>
+                      )}
+                    </div>
+                    <p className="text-sm text-muted-foreground truncate">{user.email}</p>
+                  </div>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-[0.9375rem] font-bold text-foreground truncate">{user.name}</p>
-                  <p className="text-sm text-muted-foreground truncate">{user.email}</p>
+                <div className="flex items-center justify-between sm:justify-end gap-3 w-full sm:w-auto mt-1 sm:mt-0">
+                  <Badge variant={user.role === "admin" ? "default" : "secondary"} className="flex items-center gap-1 shrink-0">
+                    {user.role === "admin"
+                      ? <ShieldCheck className="h-3 w-3" />
+                      : <UserIcon className="h-3 w-3" />}
+                    {ROLE_LABELS[user.role]}
+                  </Badge>
                 </div>
-                <Badge variant={user.role === "admin" ? "default" : "secondary"} className="flex items-center gap-1 shrink-0">
-                  {user.role === "admin"
-                    ? <ShieldCheck className="h-3 w-3" />
-                    : <UserIcon className="h-3 w-3" />}
-                  {ROLE_LABELS[user.role]}
-                </Badge>
-                {user.id === session.userId && (
-                  <span className="text-xs font-medium text-primary shrink-0">(You)</span>
-                )}
               </div>
             ))}
           </div>

@@ -435,52 +435,56 @@ function PaymentRow({
   const isOverdue = dueDate < new Date() && payment.status !== "paid"
 
   return (
-    <div className="flex items-center gap-4 px-5 py-4 transition-colors border-b border-border/50 hover:bg-secondary/30">
-      <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border ${cfg.className}`}>
-        <StatusIcon className="h-5 w-5" />
+    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 px-5 py-4 transition-colors border-b border-border/50 hover:bg-secondary/30">
+      <div className="flex items-start sm:items-center gap-4 w-full sm:w-auto overflow-hidden">
+        <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border ${cfg.className}`}>
+          <StatusIcon className="h-5 w-5" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+            <p className="text-[0.9375rem] font-bold text-foreground truncate max-w-full">{payment.title}</p>
+            <span className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-[11px] font-semibold tracking-wide uppercase ${cfg.className} shrink-0`}>
+              {cfg.label}
+            </span>
+          </div>
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3 mt-1">
+            <p className="text-sm text-muted-foreground truncate">{officeName}</p>
+            <span className="text-border text-xs hidden sm:inline">•</span>
+            <p className={`text-sm shrink-0 ${isOverdue ? "font-bold text-destructive" : "text-muted-foreground"}`}>
+              Due {dueDate.toLocaleDateString("en-IN", { day: "numeric", month: "short" })}
+            </p>
+          </div>
+        </div>
       </div>
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-3">
-          <p className="text-[0.9375rem] font-bold text-foreground truncate">{payment.title}</p>
-          <span className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-[11px] font-semibold tracking-wide uppercase ${cfg.className}`}>
-            {cfg.label}
-          </span>
+      
+      <div className="flex flex-wrap items-center justify-between sm:justify-end gap-4 w-full sm:w-auto mt-2 sm:mt-0">
+        <div className="text-left sm:text-right shrink-0">
+          <p className="text-[1.05rem] font-extrabold text-primary">{formatCurrency(payment.amount)}</p>
+          {payment.paidAmount > 0 && (
+            <p className="text-xs text-muted-foreground mt-0.5">Paid: {formatCurrency(payment.paidAmount)}</p>
+          )}
+          {remaining > 0 && payment.status !== "paid" && (
+            <p className="text-xs font-bold text-destructive mt-0.5">Due: {formatCurrency(remaining)}</p>
+          )}
         </div>
-        <div className="flex items-center gap-3 mt-1">
-          <p className="text-sm text-muted-foreground">{officeName}</p>
-          <span className="text-border text-xs">•</span>
-          <p className={`text-sm ${isOverdue ? "font-bold text-destructive" : "text-muted-foreground"}`}>
-            Due {dueDate.toLocaleDateString("en-IN", { day: "numeric", month: "short" })}
-          </p>
+        <div className="flex items-center gap-2">
+          {isAdmin && (
+            <PaymentStatusControl id={payment.id} status={payment.status} paidAmount={payment.paidAmount} />
+          )}
+          {isAdmin && (
+            <div className="flex items-center gap-1 shrink-0">
+              <PaymentDialog offices={offices} payment={payment} />
+              <DeleteButton
+                id={payment.id}
+                action={deletePaymentAction}
+                title="Delete payment?"
+                description={`This will permanently remove "${payment.title}".`}
+                successMessage="Payment deleted"
+              />
+            </div>
+          )}
         </div>
       </div>
-      <div className="text-right shrink-0">
-        <p className="text-[1.05rem] font-extrabold text-primary">{formatCurrency(payment.amount)}</p>
-        {payment.paidAmount > 0 && (
-          <p className="text-xs text-muted-foreground mt-0.5">Paid: {formatCurrency(payment.paidAmount)}</p>
-        )}
-        {remaining > 0 && payment.status !== "paid" && (
-          <p className="text-xs font-bold text-destructive mt-0.5">Due: {formatCurrency(remaining)}</p>
-        )}
-      </div>
-      {/* Inline status control */}
-      {isAdmin && (
-        <div className="shrink-0 ml-1">
-          <PaymentStatusControl id={payment.id} status={payment.status} paidAmount={payment.paidAmount} />
-        </div>
-      )}
-      {isAdmin && (
-        <div className="flex items-center gap-1 shrink-0">
-          <PaymentDialog offices={offices} payment={payment} />
-          <DeleteButton
-            id={payment.id}
-            action={deletePaymentAction}
-            title="Delete payment?"
-            description={`This will permanently remove "${payment.title}".`}
-            successMessage="Payment deleted"
-          />
-        </div>
-      )}
     </div>
   )
 }
@@ -512,58 +516,62 @@ function DailyWorkRow({
   const canModify = isAdmin || work.userId === currentUserId
 
   return (
-    <div className="flex items-center gap-4 px-5 py-4 transition-colors border-b border-border/50 hover:bg-secondary/30">
-      <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border ${cfg.className}`}>
-        <StatusIcon className="h-5 w-5" />
-      </div>
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-3">
-          <p className="text-[0.9375rem] font-bold text-foreground truncate">{work.title}</p>
-          <span className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-[11px] font-semibold tracking-wide uppercase ${cfg.className}`}>
-            {cfg.label}
-          </span>
+    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 px-5 py-4 transition-colors border-b border-border/50 hover:bg-secondary/30">
+      <div className="flex items-start sm:items-center gap-4 w-full sm:w-auto overflow-hidden">
+        <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border ${cfg.className}`}>
+          <StatusIcon className="h-5 w-5" />
         </div>
-        <div className="flex items-center gap-3 mt-1">
-          <div className="flex items-center gap-1.5">
-            <UserCheck className="h-4 w-4 text-primary" />
-            <p className="text-sm font-semibold text-foreground">{work.userName}</p>
+        <div className="flex-1 min-w-0">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+            <p className="text-[0.9375rem] font-bold text-foreground truncate max-w-full">{work.title}</p>
+            <span className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-[11px] font-semibold tracking-wide uppercase ${cfg.className} shrink-0`}>
+              {cfg.label}
+            </span>
           </div>
-          <span className="text-border text-xs">•</span>
-          <p className="text-sm text-muted-foreground">{officeName}</p>
-          {work.description && (
-            <>
-              <span className="text-border text-xs">•</span>
-              <p className="text-sm text-muted-foreground truncate max-w-[200px]">{work.description}</p>
-            </>
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3 mt-1">
+            <div className="flex items-center gap-1.5 shrink-0">
+              <UserCheck className="h-4 w-4 text-primary" />
+              <p className="text-sm font-semibold text-foreground truncate max-w-[100px] sm:max-w-none">{work.userName}</p>
+            </div>
+            <span className="text-border text-xs hidden sm:inline">•</span>
+            <p className="text-sm text-muted-foreground truncate">{officeName}</p>
+            {work.description && (
+              <>
+                <span className="text-border text-xs hidden lg:inline">•</span>
+                <p className="text-sm text-muted-foreground truncate max-w-[200px] hidden lg:block">{work.description}</p>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+      
+      <div className="flex flex-wrap items-center justify-between sm:justify-end gap-4 w-full sm:w-auto mt-2 sm:mt-0">
+        {work.hoursSpent > 0 && (
+          <div className="text-left sm:text-right shrink-0">
+            <p className="text-[1.05rem] font-extrabold text-primary">{work.hoursSpent}h</p>
+            <p className="text-xs text-muted-foreground uppercase tracking-wider font-medium mt-0.5">spent</p>
+          </div>
+        )}
+        <div className="flex items-center gap-2">
+          {canModify && (
+            <DailyWorkStatusControl id={work.id} status={work.status} />
+          )}
+          {canModify && (
+            <div className="flex items-center gap-1 shrink-0">
+              {isAdmin && (
+                <DailyWorkDialog offices={offices} users={users} work={work} isAdmin={isAdmin} />
+              )}
+              <DeleteButton
+                id={work.id}
+                action={deleteDailyWorkAction}
+                title="Delete work log?"
+                description="This will permanently remove this work entry."
+                successMessage="Work log deleted"
+              />
+            </div>
           )}
         </div>
       </div>
-      {work.hoursSpent > 0 && (
-        <div className="shrink-0 text-right">
-          <p className="text-[1.05rem] font-extrabold text-primary">{work.hoursSpent}h</p>
-          <p className="text-xs text-muted-foreground uppercase tracking-wider font-medium mt-0.5">spent</p>
-        </div>
-      )}
-      {/* Inline status control */}
-      {canModify && (
-        <div className="shrink-0">
-          <DailyWorkStatusControl id={work.id} status={work.status} />
-        </div>
-      )}
-      {canModify && (
-        <div className="flex items-center gap-1 ml-1 shrink-0">
-          {isAdmin && (
-            <DailyWorkDialog offices={offices} users={users} work={work} isAdmin={isAdmin} />
-          )}
-          <DeleteButton
-            id={work.id}
-            action={deleteDailyWorkAction}
-            title="Delete work log?"
-            description="This will permanently remove this work entry."
-            successMessage="Work log deleted"
-          />
-        </div>
-      )}
     </div>
   )
 }
